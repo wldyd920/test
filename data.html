@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>스프레드시트에 로그 남기기</title>
+</head>
+<body>
+  <h1>로그 남기기</h1>
+  <form id="logForm">
+    <label>
+      이름:
+      <input type="text" name="name" required />
+    </label>
+    <br/>
+    <label>
+      내용:
+      <input type="text" name="message" required />
+    </label>
+    <br/>
+    <button type="submit">전송</button>
+  </form>
+
+  <script>
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby160rr6kDWK01TAg0CqN6Thuc1Emaw3ocerC2N5flM2PDm9ENACSP8de0DWnz1GeMxPg/exec'; // 아까 복사한 URL
+
+    document.getElementById('logForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        name: form.name.value,
+        message: form.message.value
+      };
+
+      try {
+        const res = await fetch(WEB_APP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const json = await res.json();
+        if (json.status === 'OK') {
+          alert('로그가 성공적으로 저장되었습니다!');
+          form.reset();
+        } else {
+          alert('오류 발생: ' + json.error);
+        }
+      } catch (err) {
+        console.error(err);
+        alert('전송 실패—콘솔을 확인하세요.');
+      }
+    });
+  </script>
+</body>
+</html>
