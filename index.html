@@ -21,34 +21,28 @@
   </form>
 
   <script>
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby160rr6kDWK01TAg0CqN6Thuc1Emaw3ocerC2N5flM2PDm9ENACSP8de0DWnz1GeMxPg/exec'; // 아까 복사한 URL
-
-    document.getElementById('logForm').addEventListener('submit', async e => {
-      e.preventDefault();
-      const form = e.target;
-      const data = {
-        name: form.name.value,
-        message: form.message.value
-      };
-
+    const WEB_APP_URL = 'https://script.google.com/macros/s/…/exec';
+    
+    async function sendLog(name, message) {
+      // URLSearchParams 를 쓰면 자동으로
+      // Content-Type: application/x-www-form-urlencoded
+      const params = new URLSearchParams();
+      params.append('name', name);
+      params.append('message', message);
+    
+      // 헤더 없이 body만 보내면 프리플라이트 없이 POST
       try {
-        const res = await fetch(WEB_APP_URL, {
+        await fetch(WEB_APP_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
+          body: params,
         });
-        const json = await res.json();
-        if (json.status === 'OK') {
-          alert('로그가 성공적으로 저장되었습니다!');
-          form.reset();
-        } else {
-          alert('오류 발생: ' + json.error);
-        }
-      } catch (err) {
-        console.error(err);
-        alert('전송 실패—콘솔을 확인하세요.');
+        // 브라우저는 응답을 읽지 못 하지만, 실제로 스프레드시트에는 기록됩니다.
+        alert('로그 전송 완료 (응답은 확인 불가)');
+      } catch (e) {
+        console.error(e);
+        alert('전송 중 에러');
       }
-    });
+    }
   </script>
 </body>
 </html>
